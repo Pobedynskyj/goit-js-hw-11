@@ -23,3 +23,13 @@
     border-radius: 1px solid rgb(218, 218, 218);
   }
 }
+
+.load-more {
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  margin-left: auto;
+  margin-right: auto;
+
+  width: 200px;
+}
