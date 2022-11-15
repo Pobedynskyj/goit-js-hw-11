@@ -28,8 +28,8 @@ refs.searchForm.addEventListener('submit', formSubmit);
 function formSubmit(event) {
   event.preventDefault();
   refs.btnLoadMore.classList.add(`disabled`);
-  gallery.innerHTML = '';
-  inputValue = form[0].value.trim();
+  refs.gallery.innerHTML = '';
+  inputValue = refs.searchForm[0].value.trim();
   page = 1;
   currentHits = 0;
 
@@ -41,7 +41,7 @@ function formSubmit(event) {
       );
     }
     const markup = addMarkup(array.hits);
-    refs.gallery.insertAdjacentElement('beforeend', markup),
+    refs.gallery.insertAdjacentHTML(`beforeend`, markup),
       refs.btnLoadMore.classList.remove(`disabled`);
     Notiflix.Notify.success(`Hooray! We found ${totalHits} images`);
     if (currentHits < 40) {
@@ -51,9 +51,27 @@ function formSubmit(event) {
   refs.searchForm.reset();
 }
 
+async function fetchPhoto(page = 1) {
+  try {
+    const options = new URLSearchParams({
+      per_page: 40,
+      image_type: 'photo',
+      orientation: 'horizontal',
+      safesearch: 'true',
+    });
+    let url = `${BASE_URL}?key=${MY_KEY}&q=${inputValue}&page=${page}&${options}`;
+    const response = await axios.get(url, options);
+    const photos = await response.data;
+    totalHits = await response.data.totalHits;
+    return photos;
+  } catch {
+    error;
+  }
+}
+
 function addMarkup(array) {
   currentHits += array.length;
-  const mark = arr.reduce((acc, element) => {
+  const mark = array.reduce((acc, element) => {
     acc += `<div class="photo-card" width="400px">
         
            <img src="${element.webformatURL}" alt="${element.tags}" loading="lazy" />
@@ -80,4 +98,24 @@ function addMarkup(array) {
     return acc;
   }, '');
   return mark;
+}
+
+function onLoadClick() {
+  page++;
+  if (currentHits >= totalHits) {
+    refs.btnLoadMore.classList.add(`disabled`);
+    return Notiflix.Notify.failure(
+      "We're sorry, but you've reached the end of search results."
+    );
+  }
+  fetchPhoto(page).then(array => {
+    const markup = addMarkup(array.hits);
+    refs.gallery.insertAdjacentElement('beforeend', markup);
+    if (array.totalHits <= page * 40) {
+      refs.btnLoadMore.classList.add(`disabled`);
+      return Notiflix.Notify.failure(
+        `We're sorry, but you've reached the end of search results.`
+      );
+    }
+  });
 }
