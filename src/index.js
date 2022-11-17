@@ -124,3 +124,17 @@ function onLoadClick() {
     }
   });
 }
+
+refs.gallery.addEventListener(`click`, onImgClick);
+
+function onImgClick(event) {
+  event.preventDefault();
+}
+
+window.addEventListener(`scroll`, () => {
+  const docPos = document.documentElement.getBoundingClientRect();
+  if (docPos.bottom < document.documentElement.clientHeight + 150) {
+    page++;
+    onLoadClick();
+  }
+});
