@@ -1,5 +1,6 @@
 import SimpleLightbox from 'simplelightbox';
 import Notiflix from 'notiflix';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const axios = require('axios').default;
 
@@ -11,8 +12,6 @@ const refs = {
   gallery: document.querySelector(`.gallery`),
 };
 
-const lastEl = refs.gallery.lastElementChild;
-
 let page = 1;
 let inputValue = '';
 let totalHits;
@@ -22,7 +21,6 @@ const MY_KEY = `31254208-ff4dd95c44a4a79ef6d4abce7`;
 
 refs.btnLoadMore.classList.add(`disabled`);
 refs.btnLoadMore.addEventListener(`click`, onLoadClick);
-
 refs.searchForm.addEventListener('submit', formSubmit);
 
 function formSubmit(event) {
@@ -40,9 +38,9 @@ function formSubmit(event) {
         'Sorry, there sre no images matching your search query. Please try again.'
       );
     }
-    const markup = addMarkup(array.hits);
-    refs.gallery.insertAdjacentHTML(`beforeend`, markup),
-      refs.btnLoadMore.classList.remove(`disabled`);
+    let markup = addMarkup(array.hits);
+    refs.gallery.insertAdjacentHTML(`beforeend`, markup);
+    refs.btnLoadMore.classList.remove(`disabled`);
     Notiflix.Notify.success(`Hooray! We found ${totalHits} images`);
     if (currentHits < 40) {
       refs.btnLoadMore.classList.add(`disabled`);
@@ -73,9 +71,9 @@ function addMarkup(array) {
   currentHits += array.length;
   const mark = array.reduce((acc, element) => {
     acc += `<div class="photo-card" width="400px">
-        
-           <img src="${element.webformatURL}" alt="${element.tags}" loading="lazy" />
-           
+        <a href="${element.webformatURL}">
+           <img class="photo-img" src="${element.webformatURL}" alt="${element.tags}" loading="lazy" />
+           </a>
            <div class="info">
              <p class="info-item">
                <b>Likes</b>
@@ -95,13 +93,14 @@ function addMarkup(array) {
              </p>
            </div>
         </div>`;
+
     return acc;
   }, '');
   return mark;
 }
 
 function onLoadClick() {
-  page++;
+  page += 1;
   if (currentHits >= totalHits) {
     refs.btnLoadMore.classList.add(`disabled`);
     return Notiflix.Notify.failure(
@@ -109,8 +108,14 @@ function onLoadClick() {
     );
   }
   fetchPhoto(page).then(array => {
-    const markup = addMarkup(array.hits);
-    refs.gallery.insertAdjacentElement('beforeend', markup);
+    let markup = addMarkup(array.hits);
+    refs.gallery.insertAdjacentHTML('beforeend', markup);
+    lightbox.refresh();
+
+    const lightbox = new SimpleLightbox('.gallery a', {
+      captionsDelay: 250,
+      captionsData: 'alt',
+    });
     if (array.totalHits <= page * 40) {
       refs.btnLoadMore.classList.add(`disabled`);
       return Notiflix.Notify.failure(
