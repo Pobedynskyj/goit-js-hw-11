@@ -99,6 +99,11 @@ function addMarkup(array) {
   return mark;
 }
 
+const lightbox = new SimpleLightbox('.gallery a', {
+  captionsDelay: 250,
+  captionsData: 'alt',
+});
+
 function onLoadClick() {
   page += 1;
   if (currentHits >= totalHits) {
@@ -112,10 +117,6 @@ function onLoadClick() {
     refs.gallery.insertAdjacentHTML('beforeend', markup);
     lightbox.refresh();
 
-    const lightbox = new SimpleLightbox('.gallery a', {
-      captionsDelay: 250,
-      captionsData: 'alt',
-    });
     if (array.totalHits <= page * 40) {
       refs.btnLoadMore.classList.add(`disabled`);
       return Notiflix.Notify.failure(
@@ -123,12 +124,6 @@ function onLoadClick() {
       );
     }
   });
-}
-
-refs.gallery.addEventListener(`click`, onImgClick);
-
-function onImgClick(event) {
-  event.preventDefault();
 }
 
 window.addEventListener(`scroll`, () => {
