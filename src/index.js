@@ -22,6 +22,7 @@ const MY_KEY = `31254208-ff4dd95c44a4a79ef6d4abce7`;
 refs.btnLoadMore.classList.add(`disabled`);
 refs.btnLoadMore.addEventListener(`click`, onLoadClick);
 refs.searchForm.addEventListener('submit', formSubmit);
+refs.gallery.addEventListener('click', onImageClick);
 
 function formSubmit(event) {
   event.preventDefault();
@@ -42,13 +43,16 @@ function formSubmit(event) {
     refs.gallery.insertAdjacentHTML(`beforeend`, markup);
     refs.btnLoadMore.classList.remove(`disabled`);
     Notiflix.Notify.success(`Hooray! We found ${totalHits} images`);
+    lightbox.init();
     if (currentHits < 40) {
       refs.btnLoadMore.classList.add(`disabled`);
     }
   });
   refs.searchForm.reset();
 }
-
+function onImageClick(event) {
+  event.preventDefault();
+}
 async function fetchPhoto(page = 1) {
   try {
     const options = new URLSearchParams({
@@ -98,11 +102,20 @@ function addMarkup(array) {
   }, '');
   return mark;
 }
+const lightbox = {
+  init() {
+    this.lightbox = new SimpleLightbox('.photo-card a', {
+      captionsData: 'alt',
+      captionDelay: 250,
+      close: false,
+      showCounter: false,
+    });
+  },
 
-const lightbox = new SimpleLightbox('.gallery a', {
-  captionsDelay: 250,
-  captionsData: 'alt',
-});
+  refresh() {
+    this.lightbox.refresh();
+  },
+};
 
 function onLoadClick() {
   page += 1;
