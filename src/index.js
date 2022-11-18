@@ -143,7 +143,7 @@ window.addEventListener(`scroll`, () => {
   const docPos = document.documentElement.getBoundingClientRect();
   if (docPos.bottom < document.documentElement.clientHeight + 150) {
     Notiflix.Notify.info('Loading more images...');
-    page++;
+    page += 1;
     onLoading();
   }
 });
