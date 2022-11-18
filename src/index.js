@@ -75,7 +75,7 @@ function addMarkup(array) {
   currentHits += array.length;
   const mark = array.reduce((acc, element) => {
     acc += `<div class="photo-card" width="400px">
-        <a href="${element.webformatURL}">
+        <a href="${element.largeImageURL}">
            <img class="photo-img" src="${element.webformatURL}" alt="${element.tags}" loading="lazy" />
            </a>
            <div class="info">
