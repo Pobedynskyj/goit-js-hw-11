@@ -19,14 +19,14 @@ let currentHits = 0;
 const BASE_URL = `https://pixabay.com/api/`;
 const MY_KEY = `31254208-ff4dd95c44a4a79ef6d4abce7`;
 
-refs.btnLoadMore.classList.add(`disabled`);
-refs.btnLoadMore.addEventListener(`click`, onLoadClick);
+// refs.btnLoadMore.classList.add(`disabled`);
+// refs.btnLoadMore.addEventListener(`click`, onLoadClick);
 refs.searchForm.addEventListener('submit', formSubmit);
 refs.gallery.addEventListener('click', onImageClick);
 
 function formSubmit(event) {
   event.preventDefault();
-  refs.btnLoadMore.classList.add(`disabled`);
+  // refs.btnLoadMore.classList.add(`disabled`);
   refs.gallery.innerHTML = '';
   inputValue = refs.searchForm[0].value.trim();
   page = 1;
@@ -34,19 +34,19 @@ function formSubmit(event) {
 
   fetchPhoto().then(array => {
     if (inputValue === '' || array.hits.length === 0) {
-      refs.btnLoadMore.classList.add(`disabled`);
+      // refs.btnLoadMore.classList.add(`disabled`);
       return Notiflix.Notify.failure(
         'Sorry, there sre no images matching your search query. Please try again.'
       );
     }
     let markup = addMarkup(array.hits);
     refs.gallery.insertAdjacentHTML(`beforeend`, markup);
-    refs.btnLoadMore.classList.remove(`disabled`);
+    // refs.btnLoadMore.classList.remove(`disabled`);
     Notiflix.Notify.success(`Hooray! We found ${totalHits} images`);
     lightbox.init();
-    if (currentHits < 40) {
-      refs.btnLoadMore.classList.add(`disabled`);
-    }
+    // if (currentHits < 40) {
+    //   refs.btnLoadMore.classList.add(`disabled`);
+    // }
   });
   refs.searchForm.reset();
 }
@@ -117,10 +117,10 @@ const lightbox = {
   },
 };
 
-function onLoadClick() {
+function onLoading() {
   page += 1;
   if (currentHits >= totalHits) {
-    refs.btnLoadMore.classList.add(`disabled`);
+    // refs.btnLoadMore.classList.add(`disabled`);
     return Notiflix.Notify.failure(
       "We're sorry, but you've reached the end of search results."
     );
@@ -131,7 +131,7 @@ function onLoadClick() {
     lightbox.refresh();
 
     if (array.totalHits <= page * 40) {
-      refs.btnLoadMore.classList.add(`disabled`);
+      // refs.btnLoadMore.classList.add(`disabled`);
       return Notiflix.Notify.failure(
         `We're sorry, but you've reached the end of search results.`
       );
@@ -142,7 +142,8 @@ function onLoadClick() {
 window.addEventListener(`scroll`, () => {
   const docPos = document.documentElement.getBoundingClientRect();
   if (docPos.bottom < document.documentElement.clientHeight + 150) {
+    Notiflix.Notify.info('Loading more images...');
     page++;
-    onLoadClick();
+    onLoading();
   }
 });
